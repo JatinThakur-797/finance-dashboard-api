@@ -43,7 +43,7 @@ public class AdminService {
     }
 
     //update User
-    public User updataUser(UUID userId, UpdateUserRequest request){
+    public User updateUser(UUID userId, UpdateUserRequest request){
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException("User not found"));
@@ -67,7 +67,10 @@ public class AdminService {
     }
 
     // Delete User (optional)
-    public void deleteUser(UUID id) {
+    public void deleteUser(UUID id, UUID currentUserId) {
+        if(currentUserId.equals(id)){
+            throw new AuthException("Admin Cannot delete himself");
+        }
         userRepository.deleteById(id);
     }
 }
