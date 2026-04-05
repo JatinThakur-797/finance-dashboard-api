@@ -63,5 +63,8 @@ public class AdminService {
         return userRepository.save(user);
     }
 
-
+    // Delete User (optional)
+    public void deleteUser(UUID id) {
+        userRepository.deleteById(id);
+    }
 }
