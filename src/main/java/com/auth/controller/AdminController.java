@@ -3,6 +3,7 @@ package com.auth.controller;
 import com.auth.dto.CreateUserRequest;
 import com.auth.dto.UpdateUserRequest;
 import com.auth.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +22,7 @@ public class AdminController {
 
     // Create User
     @PostMapping("/users")
-    public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest request) {
         return ResponseEntity.ok(adminService.createUser(request));
     }
 
