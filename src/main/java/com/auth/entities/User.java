@@ -2,8 +2,6 @@ package com.auth.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -15,9 +13,7 @@ import java.util.UUID;
 @ToString
 public class User {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(unique = true, nullable = false)
     private String email;

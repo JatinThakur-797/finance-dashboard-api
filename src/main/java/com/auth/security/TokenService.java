@@ -111,7 +111,6 @@ public class TokenService {
         cookie.setPath("/api/auth/refresh");
         cookie.setMaxAge((int) refreshTokenValiditySeconds);
         cookie.setSecure(false); // set true in production
-        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 
