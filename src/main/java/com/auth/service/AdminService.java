@@ -1,12 +1,15 @@
 package com.auth.service;
 
 import com.auth.dto.CreateUserRequest;
+import com.auth.dto.UpdateUserRequest;
 import com.auth.entities.User;
 import com.auth.exeptions.AuthException;
 import com.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class AdminService {
         return userRepository.findAll();
     }
 
-
+    //update User
     public User updataUser(UUID userId, UpdateUserRequest request){
 
         User user = userRepository.findById(userId)
@@ -50,7 +53,7 @@ public class AdminService {
         if(request.getActive() != null){
             user.setActive(request.getActive());
         }
-        
+
         return userRepository.save(user);
     }
 
