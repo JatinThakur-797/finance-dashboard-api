@@ -3,7 +3,6 @@ package com.auth.controller;
 import com.auth.dto.ApiResponse;
 import com.auth.dto.AuthResponse;
 import com.auth.dto.LoginRequest;
-import com.auth.dto.SignUpRequest;
 import com.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +21,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response){
