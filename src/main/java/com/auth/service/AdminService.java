@@ -34,6 +34,13 @@ public class AdminService {
 
         return userRepository.save(user);
     }
+    // GET ALL USERS
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    
+
 
 
 
