@@ -1,12 +1,10 @@
 package com.auth.security;
 
 import com.auth.entities.User;
-import com.fasterxml.jackson.datatype.jsr310.deser.JavaTimeDeserializerModifier;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
