@@ -54,6 +54,14 @@ public class AdminService {
         return userRepository.save(user);
     }
 
+    // Toggle status
+    public User toggleUserStatus(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AuthException("User not found"));
+
+        user.setActive(!user.isActive());
+        return userRepository.save(user);
+    }
 
 
 }
