@@ -2,10 +2,8 @@ package com.auth.service;
 
 import com.auth.dto.AuthResponse;
 import com.auth.dto.LoginRequest;
-import com.auth.dto.SignUpRequest;
 import com.auth.dto.UserResponse;
 import com.auth.entities.User;
-import com.auth.entities.Role;
 import com.auth.exeptions.AuthException;
 import com.auth.repository.UserRepository;
 import com.auth.security.TokenService;
@@ -22,25 +20,8 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public void registerUser(SignUpRequest request){
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new AuthException("Email already in user");
-        }
-
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setName(request.getName());
-        if(request.getEmail().equals("admin@zorvyn.io")){
-            user.setRole(Role.ADMIN);
-        }else{
-        user.setRole(Role.VIEWER); // Default
-        }
-        System.out.println(user);
-        userRepository.save(user);
-    }
+    private final BCryptPasswordEncoder passwordEncoder;
+    //Login
     public AuthResponse login(LoginRequest request, HttpServletResponse response){
 
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AuthException("Invalid email or password"));
@@ -51,6 +32,7 @@ public class AuthService {
         tokenService.setRefreshCookie(response, tokens.refreshToken());
         return new AuthResponse(tokens.accessToken(), new UserResponse(user));
     }
+    // Generate refresh token
     public AuthResponse refreshToken(HttpServletRequest request, HttpServletResponse response){
         String oldRefresh = tokenService.readRefreshCookie(request);
         var maybe = tokenService.refresh(oldRefresh).orElseThrow(() -> new AuthException("Invalid refresh token"));
@@ -58,7 +40,7 @@ public class AuthService {
         return new AuthResponse(maybe.accessToken(), null);
 
     }
-
+    // logout
     public void logout(HttpServletRequest request, HttpServletResponse response){
         String refresh = tokenService.readRefreshCookie(request);
         tokenService.revokeByToken(refresh);
