@@ -2,12 +2,15 @@ package com.auth.service;
 
 import com.auth.dto.CreateUserRequest;
 import com.auth.dto.UpdateUserRequest;
+import com.auth.dto.UserResponse;
 import com.auth.entities.User;
 import com.auth.exeptions.AuthException;
 import com.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,55 +18,48 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminService {
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder;
 
     //Create User
-    public User createUser(CreateUserRequest request) {
-        //Check User is already Exist or not
+    public UserResponse createUser(CreateUserRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new AuthException("User already exists");
+            throw new AuthException("User already exists with this email");
         }
-        //Check for role
         if (request.getRole() == null) {
             throw new AuthException("Role is required");
         }
-
         User user = new User();
         user.setEmail(request.getEmail());
         user.setName(request.getName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
         user.setActive(true);
-
-        return userRepository.save(user);
-    }
-    // GET ALL USERS
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return new UserResponse(userRepository.save(user));
     }
 
-    //update User
-    public User updateUser(UUID userId, UpdateUserRequest request){
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserResponse::new)
+                .toList();
+    }
 
+    public UserResponse updateUser(UUID userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException("User not found"));
-        if(request.getRole() != null){
-            user.setRole(request.getRole());
-        }
-        if(request.getActive() != null){
-            user.setActive(request.getActive());
-        }
-
-        return userRepository.save(user);
+        if (request.getRole() != null) user.setRole(request.getRole());
+        if (request.getActive() != null) user.setActive(request.getActive());
+        user.setUpdatedAt(OffsetDateTime.now()); // ← you were missing this
+        return new UserResponse(userRepository.save(user));
     }
 
     // Toggle status
-    public User toggleUserStatus(UUID id) {
+    public UserResponse toggleUserStatus(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AuthException("User not found"));
 
         user.setActive(!user.isActive());
-        return userRepository.save(user);
+        return new UserResponse(userRepository.save(user));
     }
 
     // Delete User (optional)
