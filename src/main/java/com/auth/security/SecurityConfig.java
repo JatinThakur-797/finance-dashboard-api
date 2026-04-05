@@ -1,13 +1,10 @@
 package com.auth.security;
 
-import com.auth.entities.User;
-import com.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.parsers.ReturnTypeParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,39 +13,58 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @RequiredArgsConstructor
-public class SecurityConfig  {
+@EnableMethodSecurity
+public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler auth2AuthenticationSuccessHandler;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, RefreshTokenRepository refreshTokenRepository, ReturnTypeParser returnTypeParser) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(authenticationEntryPoint)
+                )
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/auth/**", "/oauth2/**").permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/api/records/**")
-                                .hasAnyRole("ADMIN", "ANALYST", "VIEWER")
+                        // ✅ Public endpoints (ONLY LOGIN)
+                        .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
 
-                                .requestMatchers("/api/dashboard/**")
-                                .hasAnyRole("ADMIN", "ANALYST")
+                        // ✅ ADMIN ONLY
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                                .requestMatchers("/api/records/**")
-                                .hasRole("ADMIN")
+                        // ✅ RECORDS
+                        .requestMatchers(HttpMethod.POST, "/api/records/**")
+                        .hasAnyRole("ADMIN", "ANALYST")
 
-                                .anyRequest().authenticated()
-                        )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .requestMatchers(HttpMethod.PUT, "/api/records/**")
+                        .hasAnyRole("ADMIN", "ANALYST")
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/records/**")
+                        .hasAnyRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/api/records/**")
+                        .hasAnyRole("ADMIN", "ANALYST", "VIEWER")
+
+                        // ✅ DASHBOARD
+                        .requestMatchers("/api/dashboard/**")
+                        .hasAnyRole("ADMIN", "ANALYST", "VIEWER")
+
+                        // ✅ EVERYTHING ELSE
+                        .anyRequest().authenticated()
                 );
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+        //  JWT FILTER
+        http.addFilterBefore(
+                new JwtAuthenticationFilter(jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class
+        );
+
         return http.build();
     }
 }
