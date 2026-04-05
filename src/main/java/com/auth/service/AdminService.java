@@ -1,5 +1,15 @@
 package com.auth.service;
 
+import com.auth.dto.CreateUserRequest;
+import com.auth.entities.User;
+import com.auth.exeptions.AuthException;
+import com.auth.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
 public class AdminService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
