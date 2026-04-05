@@ -22,12 +22,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> signup(@Valid @RequestBody SignUpRequest request){
-        authService.registerUser(request);
-        return ResponseEntity.ok(new ApiResponse(true, "User registered Successfully"));
-
-    }
+    
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response){
