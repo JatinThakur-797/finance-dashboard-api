@@ -39,8 +39,20 @@ public class AdminService {
         return userRepository.findAll();
     }
 
-    
 
+    public User updataUser(UUID userId, UpdateUserRequest request){
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AuthException("User not found"));
+        if(request.getRole() != null){
+            user.setRole(request.getRole());
+        }
+        if(request.getActive() != null){
+            user.setActive(request.getActive());
+        }
+        
+        return userRepository.save(user);
+    }
 
 
 
