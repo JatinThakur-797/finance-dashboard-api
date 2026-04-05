@@ -3,7 +3,7 @@ package com.auth.security;
 
 import com.auth.entities.User;
 import com.auth.entities.UserSocialAccount;
-import com.auth.enums.Role;
+import com.auth.entities.Role;
 import com.auth.repository.UserRepository;
 import com.auth.repository.UserSocialRepository;
 import lombok.RequiredArgsConstructor;

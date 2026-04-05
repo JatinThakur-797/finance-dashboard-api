@@ -5,7 +5,7 @@ import com.auth.dto.LoginRequest;
 import com.auth.dto.SignUpRequest;
 import com.auth.dto.UserResponse;
 import com.auth.entities.User;
-import com.auth.enums.Role;
+import com.auth.entities.Role;
 import com.auth.exeptions.AuthException;
 import com.auth.repository.UserRepository;
 import com.auth.security.TokenService;
@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 @Service
